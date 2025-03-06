@@ -1,46 +1,70 @@
 package it.epicode.gestione_biscottificio.products;
 
+import it.epicode.gestione_biscottificio.response.CreateResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import jakarta.validation.Valid;
 
 import java.util.List;
 
 @Service
-@Validated
 @RequiredArgsConstructor
+@Validated
 public class ProductService {
-    private final ProductRepository repository;
-    private final ProductMapper mapper;
+    private final ProductRepository productRepository;
+
+    public ProductResponse productResponseFromEntity(Product product) {
+        ProductResponse response = new ProductResponse();
+        BeanUtils.copyProperties(product, response);
+        return response;
+    }
 
     public List<ProductResponse> findAll() {
-        return mapper.toDto(repository.findAll());
+        return productRepository.findAll().stream().map(this::productResponseFromEntity).toList();
     }
 
-    public ProductResponse findById(Long id) {
-        return repository.findById(id)
-                .map(mapper::toDto)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with id " + id));
+    public ProductDetailResponse findProductById(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Product not found"));
+        ProductDetailResponse response = new ProductDetailResponse();
+        BeanUtils.copyProperties(product, response);
+        return response;
     }
 
-    public ProductResponse save(@Valid ProductRequest request) {
-        Product product = mapper.toEntity(request);
-        return mapper.toDto(repository.save(product));
+    public CreateResponse save(ProductRequest productRequest) {
+        Product product = new Product();
+        BeanUtils.copyProperties(productRequest, product);
+        productRepository.save(product);
+        return new CreateResponse(product.getId());
     }
 
-    public ProductResponse update(Long id, @Valid ProductRequest request) {
-        Product entity = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with id " + id));
-        mapper.updateEntity(entity, request);
-        return mapper.toDto(repository.save(entity));
+    public ProductDetailResponse modify(Long id, ProductRequest productRequest) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Product not found"));
+        BeanUtils.copyProperties(productRequest, product);
+        productRepository.save(product);
+        ProductDetailResponse response = new ProductDetailResponse();
+        BeanUtils.copyProperties(product, response);
+        return response;
+    }
+
+    public ProductDetailResponse modifyProductDetails(Long id, ProductPatchRequest productPatchRequest) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Product not found"));
+        if (productPatchRequest.getTitle() != null) product.setTitle(productPatchRequest.getTitle());
+        if (productPatchRequest.getImage() != null) product.setImage(productPatchRequest.getImage());
+        if (productPatchRequest.getPrice() != null) product.setPrice(productPatchRequest.getPrice());
+        if (productPatchRequest.getDescription() != null) product.setDescription(productPatchRequest.getDescription());
+        productRepository.save(product);
+        ProductDetailResponse response = new ProductDetailResponse();
+        BeanUtils.copyProperties(product, response);
+        return response;
     }
 
     public void delete(Long id) {
-        if (!repository.existsById(id)) {
-            throw new EntityNotFoundException("Product not found with id " + id);
+        if (!productRepository.existsById(id)) {
+            throw new EntityNotFoundException("Product not found");
         }
-        repository.deleteById(id);
+        productRepository.deleteById(id);
     }
 }
+
