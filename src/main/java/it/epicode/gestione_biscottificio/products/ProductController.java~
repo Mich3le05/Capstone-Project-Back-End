@@ -1,0 +1,4 @@
+package it.epicode.gestione_biscottificio.products;
+
+public class ProductController {
+}
