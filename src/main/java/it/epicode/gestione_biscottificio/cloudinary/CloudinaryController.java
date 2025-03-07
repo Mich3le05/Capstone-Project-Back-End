@@ -26,8 +26,10 @@ public class CloudinaryController {
 
         try {
             Map result = cloudinary.uploader()
-                    .upload(file.getBytes(), Cloudinary.asMap("folder", "WorkerAvatar", "public_id", file.getOriginalFilename()));
+                    .upload(file.getBytes(), Cloudinary.asMap("folder", "Products", "public_id", file.getOriginalFilename()));
             String url = result.get("secure_url").toString();
+
+            System.out.println(result);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
