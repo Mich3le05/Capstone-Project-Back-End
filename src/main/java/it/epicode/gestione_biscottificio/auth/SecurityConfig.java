@@ -36,6 +36,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Disabilita CSRF
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll() // Permetti accesso libero a login e registrazione
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
+
                         .requestMatchers("/admin/**").hasRole("ADMIN") // Solo per utenti admin
                         .requestMatchers("/seller/**").hasRole("SELLER") // Solo per utenti seller
                         .anyRequest().authenticated() // Altri endpoint richiedono autenticazione
