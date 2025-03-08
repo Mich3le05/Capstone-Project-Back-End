@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -35,9 +36,16 @@ public class ProductService {
     public CreateResponse save(ProductRequest productRequest) {
         Product product = new Product();
         BeanUtils.copyProperties(productRequest, product);
+
+        // Genera SKU automatico
+        if (product.getSku() == null || product.getSku().isEmpty()) {
+            product.setSku(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        }
+
         productRepository.save(product);
         return new CreateResponse(product.getId());
     }
+
 
     public ProductDetailResponse modify(Long id, ProductRequest productRequest) {
         Product product = productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Product not found"));

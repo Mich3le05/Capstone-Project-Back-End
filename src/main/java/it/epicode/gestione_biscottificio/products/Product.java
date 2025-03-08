@@ -14,8 +14,24 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String sku;
+
+    @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
     private String image;
+
+    @Column(nullable = false)
     private Double price;
+
+    @Column(nullable = false, length = 1000)
     private String description;
+
+    @Column(nullable = false)
+    private String category;
+    @Column(nullable = false)
+    private Integer stock;
 }
