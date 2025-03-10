@@ -74,5 +74,10 @@ public class ProductService {
         }
         productRepository.deleteById(id);
     }
+
+    public Product saveProduct(Product product) {
+        return productRepository.save(product);
+    }
+
 }
 

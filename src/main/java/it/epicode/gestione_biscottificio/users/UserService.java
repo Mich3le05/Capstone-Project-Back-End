@@ -6,6 +6,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -18,16 +20,19 @@ public class UserService {
         BeanUtils.copyProperties(userRequest, user);
 
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-
         user.setRole(UserRole.valueOf(userRequest.getRole()));
 
         userRepository.save(user);
         return new UserResponse(user.getId(), user.getName(), user.getSurname(), user.getUsername(), user.getEmail(), user.getRole().toString());
     }
 
-    public UserResponse findByUsername(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-        return new UserResponse(user.getId(), user.getName(), user.getSurname(), user.getUsername(), user.getEmail(), user.getRole().toString());
+    // Modificato per restituire Optional<User>
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public User saveUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword())); // Cripta la password
+        return userRepository.save(user);
     }
 }

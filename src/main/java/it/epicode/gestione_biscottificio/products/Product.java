@@ -1,5 +1,6 @@
 package it.epicode.gestione_biscottificio.products;
 
+import it.epicode.gestione_biscottificio.category.Category;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,8 +31,10 @@ public class Product {
     @Column(nullable = false, length = 1000)
     private String description;
 
-    @Column(nullable = false)
-    private String category;
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
     @Column(nullable = false)
     private Integer stock;
 }
