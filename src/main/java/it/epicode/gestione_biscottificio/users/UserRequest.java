@@ -29,5 +29,6 @@ public class UserRequest {
     @Size(min = 6, message = "La password deve essere lunga almeno 6 caratteri")
     private String password;
 
+    @NotBlank(message = "Il ruolo non può essere vuoto")
     private String role;
 }

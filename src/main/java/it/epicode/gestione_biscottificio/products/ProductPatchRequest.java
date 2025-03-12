@@ -12,4 +12,5 @@ public class ProductPatchRequest {
     private String image;
     private Double price;
     private String description;
+    private Long categoryId;
 }

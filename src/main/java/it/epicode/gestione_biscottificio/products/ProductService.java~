@@ -17,7 +17,6 @@ import java.util.UUID;
 @Validated
 public class ProductService {
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
 
     public ProductResponse productResponseFromEntity(Product product) {
         ProductResponse response = new ProductResponse();
@@ -30,8 +29,7 @@ public class ProductService {
     }
 
     public ProductDetailResponse findProductById(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+        Product product = productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Product not found"));
         ProductDetailResponse response = new ProductDetailResponse();
         BeanUtils.copyProperties(product, response);
         return response;
@@ -41,8 +39,7 @@ public class ProductService {
         Product product = new Product();
         BeanUtils.copyProperties(productRequest, product);
 
-        // ✅ Corretto il riferimento al repository
-        Category category = categoryRepository.findById(productRequest.getCategoryId())
+        Category category = CategoryRepository.findById(productRequest.getCategoryId())
                 .orElseThrow(() -> new EntityNotFoundException("Category not found"));
 
         product.setCategory(category);
@@ -55,19 +52,10 @@ public class ProductService {
         return new CreateResponse(product.getId());
     }
 
+
     public ProductDetailResponse modify(Long id, ProductRequest productRequest) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
-
+        Product product = productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Product not found"));
         BeanUtils.copyProperties(productRequest, product);
-
-        // ✅ Controllo per aggiornare la categoria
-        if (productRequest.getCategoryId() != null) {
-            Category category = categoryRepository.findById(productRequest.getCategoryId())
-                    .orElseThrow(() -> new EntityNotFoundException("Category not found"));
-            product.setCategory(category);
-        }
-
         productRepository.save(product);
         ProductDetailResponse response = new ProductDetailResponse();
         BeanUtils.copyProperties(product, response);
@@ -75,20 +63,11 @@ public class ProductService {
     }
 
     public ProductDetailResponse modifyProductDetails(Long id, ProductPatchRequest productPatchRequest) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
-
+        Product product = productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Product not found"));
         if (productPatchRequest.getTitle() != null) product.setTitle(productPatchRequest.getTitle());
         if (productPatchRequest.getImage() != null) product.setImage(productPatchRequest.getImage());
         if (productPatchRequest.getPrice() != null) product.setPrice(productPatchRequest.getPrice());
         if (productPatchRequest.getDescription() != null) product.setDescription(productPatchRequest.getDescription());
-
-        if (productPatchRequest.getCategoryId() != null) {
-            Category category = categoryRepository.findById(productPatchRequest.getCategoryId())
-                    .orElseThrow(() -> new EntityNotFoundException("Category not found"));
-            product.setCategory(category);
-        }
-
         productRepository.save(product);
         ProductDetailResponse response = new ProductDetailResponse();
         BeanUtils.copyProperties(product, response);
@@ -105,4 +84,6 @@ public class ProductService {
     public Product saveProduct(Product product) {
         return productRepository.save(product);
     }
+
 }
+

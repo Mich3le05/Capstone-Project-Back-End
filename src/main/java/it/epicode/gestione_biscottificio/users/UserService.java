@@ -20,16 +20,16 @@ public class UserService {
         BeanUtils.copyProperties(userRequest, user);
 
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-        user.setRole(UserRole.valueOf(userRequest.getRole()));
+        user.setRole(UserRole.valueOf(userRequest.getRole().toUpperCase()));
 
         userRepository.save(user);
         return new UserResponse(user.getId(), user.getName(), user.getSurname(), user.getUsername(), user.getEmail(), user.getRole().toString());
     }
 
-    // Modificato per restituire Optional<User>
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+
 
     public User saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword())); // Cripta la password

@@ -1,6 +1,7 @@
 package it.epicode.gestione_biscottificio.users;
 
 import it.epicode.gestione_biscottificio.response.CreateResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,10 +23,20 @@ public class UserController {
         return new CreateResponse(response.getId());
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/{email}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("isAuthenticated()")
-    public UserResponse findByUsername(@PathVariable String username) {
-        return userService.findByUsername(username);
+    public UserResponse findByEmail(@PathVariable String email) {
+        return userService.findByEmail(email)
+                .map(user -> new UserResponse(
+                        user.getId(),
+                        user.getName(),
+                        user.getSurname(),
+                        user.getUsername(),
+                        user.getEmail(),
+                        user.getRole().toString()
+                ))
+                .orElseThrow(() -> new EntityNotFoundException("Utente con email " + email + " non trovato"));
     }
+
 }

@@ -25,10 +25,11 @@ public class ProductRequest {
     @NotBlank(message = "La descrizione non può essere vuota")
     private String description;
 
-    @NotBlank(message = "La categoria non può essere vuota")
-    private String category;
+    @NotNull(message = "L'ID della categoria non può essere nullo")
+    private Long categoryId;
 
     @NotNull(message = "La quantità non può essere nulla")
     @Min(value = 0, message = "La quantità non può essere negativa")
     private Integer stock;
 }
+
