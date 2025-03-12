@@ -14,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -34,18 +33,19 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll() // Aggiungi Swagger qui
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/seller/**").hasRole("SELLER")
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll() // Permetti l'accesso pubblico a /register e /login
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll() // Accesso pubblico alla documentazione Swagger
+                        .anyRequest().authenticated() // Tutte le altre richieste devono essere autenticate
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint) // Gestisce gli errori di accesso non autorizzato
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Disabilita la sessione, dato che si usa JWT
                 );
 
-        // Aggiungi il filtro JWT
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Aggiunge il filtro JWT prima del filtro di autenticazione
+
         return http.build();
     }
 
@@ -56,6 +56,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(); // Utilizza BCrypt per la codifica delle password
     }
 }
