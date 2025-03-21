@@ -13,6 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -32,19 +35,20 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // Abilita CORS e usa la configurazione definita
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll() // Permetti l'accesso pubblico a /register e /login
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll() // Accesso pubblico alla documentazione Swagger
-                        .anyRequest().authenticated() // Tutte le altre richieste devono essere autenticate
+                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()  // Permetti l'accesso pubblico
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()  // Accesso pubblico alla documentazione Swagger
+                        .anyRequest().authenticated()  // Tutte le altre richieste devono essere autenticate
                 )
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint) // Gestisce gli errori di accesso non autorizzato
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)  // Gestisce gli errori di accesso non autorizzato
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Disabilita la sessione, dato che si usa JWT
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // Disabilita la sessione, dato che si usa JWT
                 );
 
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Aggiunge il filtro JWT prima del filtro di autenticazione
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -56,6 +60,20 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Utilizza BCrypt per la codifica delle password
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfig = new CorsConfiguration();
+        corsConfig.addAllowedOrigin("http://localhost:5173");  // Aggiungi il dominio del tuo frontend
+        corsConfig.addAllowedMethod("*");  // Consente tutti i metodi HTTP
+        corsConfig.addAllowedHeader("*");  // Consente tutti gli header
+        corsConfig.setAllowCredentials(true);  // Consente l'uso di credenziali
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfig);  // Applica la configurazione a tutte le URL
+
+        return source;
     }
 }
