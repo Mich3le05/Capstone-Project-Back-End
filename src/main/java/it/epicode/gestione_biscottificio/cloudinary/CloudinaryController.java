@@ -20,19 +20,17 @@ public class CloudinaryController {
     private final Cloudinary cloudinary;
 
     @PostMapping(path = "/uploadme", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void upload(
-            @RequestPart("file")
-            MultipartFile file) {
-
+    public Map<String, String> upload(@RequestPart("file") MultipartFile file) {
         try {
             Map result = cloudinary.uploader()
                     .upload(file.getBytes(), Cloudinary.asMap("folder", "Products", "public_id", file.getOriginalFilename()));
             String url = result.get("secure_url").toString();
 
-            System.out.println(result);
+            return Map.of("imageUrl", url);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
 }
