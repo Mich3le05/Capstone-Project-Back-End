@@ -1,6 +1,9 @@
 package it.epicode.gestione_biscottificio.products;
 
+import it.epicode.gestione_biscottificio.category.Category;
+import it.epicode.gestione_biscottificio.category.CategoryRepository;
 import it.epicode.gestione_biscottificio.response.CreateResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,11 +16,28 @@ import java.util.List;
 @RequiredArgsConstructor
 @PreAuthorize("isAuthenticated()")
 public class ProductController {
+
+    private final ProductRepository productRepository; // Aggiungi iniezione del repository Product
+    private final CategoryRepository categoryRepository; // Aggiungi iniezione del repository Category
     private final ProductService productService;
+
+    @GetMapping("/category/{categoryId}")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public List<ProductResponse> findByCategory(@PathVariable Long categoryId) {
+        List<Product> products = productRepository.findByCategoryId(categoryId);
+
+        if (products.isEmpty()) {
+            throw new EntityNotFoundException("Nessun prodotto trovato per questa categoria");
+        }
+
+        return products.stream().map(this::productResponseFromEntity).toList();
+    }
+
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public List<ProductResponse> findAll() {
         return productService.findAll();
     }
@@ -55,5 +75,10 @@ public class ProductController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SELLER')")
     public void delete(@PathVariable Long id) {
         productService.delete(id);
+    }
+
+    // Metodo per mappare un Product in ProductResponse
+    private ProductResponse productResponseFromEntity(Product product) {
+        return new ProductResponse(product.getId(), product.getTitle(), product.getImage(), product.getPrice(), product.getDescription());
     }
 }

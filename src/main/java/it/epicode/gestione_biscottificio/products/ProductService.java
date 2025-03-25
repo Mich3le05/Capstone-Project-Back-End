@@ -105,4 +105,17 @@ public class ProductService {
     public Product saveProduct(Product product) {
         return productRepository.save(product);
     }
+
+    public List<ProductResponse> findByCategory(Long categoryId) {
+        List<Product> products = productRepository.findByCategoryId(categoryId);
+
+        if (products.isEmpty()) {
+            throw new EntityNotFoundException("Nessun prodotto trovato per questa categoria");
+        }
+
+        return products.stream()
+                .map(this::productResponseFromEntity)
+                .toList();
+    }
+
 }
