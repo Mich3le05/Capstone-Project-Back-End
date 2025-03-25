@@ -14,9 +14,8 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-
     @PostMapping("/add")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Category> addCategory(@RequestBody Category category) {
         return ResponseEntity.ok(categoryService.saveCategory(category));
     }
@@ -26,8 +25,6 @@ public class CategoryController {
         return categoryService.getAllCategories();
     }
 
-
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long id) {
         return categoryService.getCategoryById(id)
@@ -35,8 +32,8 @@ public class CategoryController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();

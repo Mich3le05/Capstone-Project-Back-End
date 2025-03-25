@@ -14,16 +14,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
-@PreAuthorize("isAuthenticated()")
 public class ProductController {
 
-    private final ProductRepository productRepository; // Aggiungi iniezione del repository Product
-    private final CategoryRepository categoryRepository; // Aggiungi iniezione del repository Category
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
     private final ProductService productService;
 
     @GetMapping("/category/{categoryId}")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public List<ProductResponse> findByCategory(@PathVariable Long categoryId) {
         List<Product> products = productRepository.findByCategoryId(categoryId);
 
@@ -37,14 +35,12 @@ public class ProductController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public List<ProductResponse> findAll() {
         return productService.findAll();
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("isAuthenticated()")
     public ProductDetailResponse findProductById(@PathVariable Long id) {
         return productService.findProductById(id);
     }
@@ -77,7 +73,6 @@ public class ProductController {
         productService.delete(id);
     }
 
-    // Metodo per mappare un Product in ProductResponse
     private ProductResponse productResponseFromEntity(Product product) {
         return new ProductResponse(product.getId(), product.getTitle(), product.getImage(), product.getPrice(), product.getDescription());
     }
