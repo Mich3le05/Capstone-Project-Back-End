@@ -41,8 +41,7 @@ public class JwtTokenUtil {
 
     // Estrae tutti i claims dal token JWT
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(secret)
+        return Jwts.parserBuilder().setSigningKey(secret).build()
                 .parseClaimsJws(token)
                 .getBody();
     }
