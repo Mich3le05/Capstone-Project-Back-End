@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
-@Component
+//@Component
 public class AppRunner implements ApplicationRunner {
 
     private final CategoryService categoryService;
@@ -34,13 +34,13 @@ public class AppRunner implements ApplicationRunner {
             categoryService.saveCategory(classici);
 
             // Prodotti per tipici Castrensi
-            productService.saveProduct(createProduct("Biscotti Castriciani", "https://res.cloudinary.com/dn9wsjpqo/image/upload/v1741441716/Products/2.webp.webp", 3.5, "Biscotti Castriciani morbidi", tipiciCastrensi));
+//            productService.saveProduct(createProduct("Biscotti Castriciani", "https://res.cloudinary.com/dn9wsjpqo/image/upload/v1741441716/Products/2.webp.webp", 3.5, "Biscotti Castriciani morbidi", tipiciCastrensi));
 
             // Prodotti per pasticceria
-            productService.saveProduct(createProduct("Cheesecake", "https://image.url/6.jpg", 9.0, "Cheesecake ai frutti di bosco", pasticceria));
+//            productService.saveProduct(createProduct("Cheesecake", "https://image.url/6.jpg", 9.0, "Cheesecake ai frutti di bosco", pasticceria));
 
             // Prodotti per classici
-            productService.saveProduct(createProduct("Crostata di Nutella", "https://image.url/8.jpg", 7.5, "Crostata con crema di nocciole", classici));
+//            productService.saveProduct(createProduct("Crostata di Nutella", "https://image.url/8.jpg", 7.5, "Crostata con crema di nocciole", classici));
 
         }
     }
