@@ -48,7 +48,8 @@ public class SecurityConfig {
                                     "/api/products",
                                     "/api/products/**",
                                     "/api/categories",
-                                    "/api/categories/**"
+                                    "/api/categories/**",
+                                    "/api/payments/**"
                             ).permitAll()
                             // Swagger
                             .requestMatchers(
