@@ -17,6 +17,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -87,16 +89,18 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.addAllowedOrigin("http://localhost:5173"); // locale
-        corsConfig.addAllowedOrigin("https://capstone-project-front-end-hazel.vercel.app"); // produzione
-        corsConfig.addAllowedMethod("*"); // GET, POST, PUT, DELETE, ecc.
+        corsConfig.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "https://capstone-project-front-lbpech60o-micheles-projects-a143b6dd.vercel.app"
+        ));
+        corsConfig.addAllowedMethod("*");
         corsConfig.addAllowedHeader("*");
         corsConfig.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig);
-
         return source;
     }
+
 
 }
