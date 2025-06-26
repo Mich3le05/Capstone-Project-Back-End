@@ -91,7 +91,7 @@ public class SecurityConfig {
         CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.setAllowedOrigins(List.of(
                 "http://localhost:5173",
-                "https://capstone-project-front-9acbccwx1-micheles-projects-a143b6dd.vercel.app"
+                "https://capstone-project-front-d8dqylgsf-micheles-projects-a143b6dd.vercel.app"
         ));
         corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         corsConfig.setAllowedHeaders(List.of("*"));
