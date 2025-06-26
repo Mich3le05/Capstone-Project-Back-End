@@ -87,14 +87,16 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.addAllowedOrigin("http://localhost:5173");  // Aggiungi il dominio del tuo frontend
-        corsConfig.addAllowedMethod("*");  // Consente tutti i metodi HTTP
-        corsConfig.addAllowedHeader("*");  // Consente tutti gli header
-        corsConfig.setAllowCredentials(true);  // Consente l'uso di credenziali
+        corsConfig.addAllowedOrigin("http://localhost:5173"); // locale
+        corsConfig.addAllowedOrigin("https://capstone-project-front-end-hazel.vercel.app"); // produzione
+        corsConfig.addAllowedMethod("*"); // GET, POST, PUT, DELETE, ecc.
+        corsConfig.addAllowedHeader("*");
+        corsConfig.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfig);  // Applica la configurazione a tutte le URL
+        source.registerCorsConfiguration("/**", corsConfig);
 
         return source;
     }
+
 }
